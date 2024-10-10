@@ -7,10 +7,12 @@
         <UIcon :name="icon" :class="iconColor" />
         <div>{{ transaction.description }}</div>
       </div>
+
       <div>
         <UBadge color="white">{{ transaction.category }}</UBadge>
       </div>
     </div>
+
     <div class="flex items-center justify-end space-x-2">
       <div>{{ currency }}</div>
       <div>
@@ -32,6 +34,7 @@ const props = defineProps({
   transaction: Object,
 });
 
+const emit = defineEmits(["deleted"]);
 const isIncome = computed(() => props.transaction.type === "Income");
 
 const icon = computed(() =>
@@ -52,14 +55,13 @@ const deleteTransaction = async () => {
   isLoading.value = true;
 
   try {
-    await supabase.from("transactions")
-      .delete()
-      .eq("id", props.transaction.id);
+    await supabase.from("transactions").delete().eq("id", props.transaction.id);
     toast.add({
       title: "Transaction deleted",
       icon: "i-heroicons-check-circle",
       color: "green",
     });
+    emit('deleted', props.transaction.id)
   } catch (error) {
     toast.add({
       title: "Transaction deleted",
