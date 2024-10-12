@@ -47,7 +47,23 @@
         period
       </div>
     </div>
-    <div><UButton icon="i-heroicons-plus-circle" color="white" variant="solid" label="Add" /></div>
+    <div>
+      <UModal v-model="isOpen">
+        <UCard
+          :uri="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }"
+        >
+          <template #header>Add Transaction </template>
+          <div>Hello!</div>
+        </UCard>
+      </UModal>
+      <UButton
+        icon="i-heroicons-plus-circle"
+        color="white"
+        variant="solid"
+        label="Add"
+        @click="isOpen = true"
+      />
+    </div>
   </section>
 
   <section v-if="!isLoading">
@@ -77,6 +93,7 @@ const supabase = useSupabaseClient();
 const selectedView = ref(transactionViewOptions[1]);
 const transactions = ref([]);
 const isLoading = ref(false);
+const isOpen = ref(false);
 
 const income = computed(() =>
   transactions.value.filter((t) => t.type === "Income")
