@@ -95,6 +95,8 @@ const transactions = ref([]);
 const isLoading = ref(false);
 const isOpen = ref(false);
 
+
+// testing
 const income = computed(() =>
   transactions.value.filter((t) => t.type === "Income")
 );
