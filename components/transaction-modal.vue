@@ -3,7 +3,7 @@
     <UCard :uri="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
       <template #header>Add Transaction </template>
 
-      <UForm :state="state">
+      <UForm :state="state" :schema="schema" ref="form" @submit="save">
         <UFormGroup
           :required="true"
           label="Transaction Type"
@@ -44,7 +44,7 @@
           name="description"
           class="mb-4"
         >
-          <UInput placeholder="Description" v-model="state.description"/>
+          <UInput placeholder="Description" v-model="state.description" />
         </UFormGroup>
 
         <UFormGroup
@@ -52,8 +52,13 @@
           label="Category"
           name="category"
           class="mb-4"
+          v-if="state.type === 'Expense'"
         >
-          <USelect placeholder="Category" :options="categories" v-model="state.category" />
+          <USelect
+            placeholder="Category"
+            :options="categories"
+            v-model="state.category"
+          />
         </UFormGroup>
 
         <UButton type="submit" color="black" variant="solid" label="Save" />
@@ -64,11 +69,48 @@
 
 <script setup>
 import { categories, types } from "~/constants";
+import { z } from "zod";
 
 const props = defineProps({
   modelValue: Boolean,
 });
 const emit = defineEmits(["update:modelValue"]);
+
+const defaultSchema = z.object({
+  created_at: z.string(),
+  description: z.string().optional(),
+  amount: z.number().positive("Amount needs to be more than 0"),
+});
+
+const incomeSchema = z.object({
+  type: z.literal("Income"),
+});
+const expenseSchema = z.object({
+  type: z.literal("Expense"),
+  category: z.enum(categories),
+});
+const investmentSchema = z.object({
+  type: z.literal("Investment"),
+});
+const savingSchema = z.object({
+  type: z.literal("Saving"),
+});
+
+const schema = z.intersection(
+  z.discriminatedUnion("type", [
+    incomeSchema,
+    expenseSchema,
+    investmentSchema,
+    savingSchema,
+  ]),
+  defaultSchema
+);
+
+const form = ref();
+
+const save = async () => {
+  form.value.validate();
+};
 
 const state = ref({
   type: undefined,
