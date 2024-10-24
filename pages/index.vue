@@ -48,14 +48,7 @@
       </div>
     </div>
     <div>
-      <UModal v-model="isOpen">
-        <UCard
-          :uri="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }"
-        >
-          <template #header>Add Transaction </template>
-          <div>Hello!</div>
-        </UCard>
-      </UModal>
+      <TransactionModal v-model="isOpen" />
       <UButton
         icon="i-heroicons-plus-circle"
         color="white"
@@ -94,9 +87,6 @@ const selectedView = ref(transactionViewOptions[1]);
 const transactions = ref([]);
 const isLoading = ref(false);
 const isOpen = ref(false);
-
-
-// test
 
 const income = computed(() =>
   transactions.value.filter((t) => t.type === "Income")
