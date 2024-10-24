@@ -1,7 +1,7 @@
 <template>
   <UModal v-model="isOpen">
-    <UCard :uri="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
-      <template #header>Add Transaction </template>
+    <UCard>
+      <template #header> Add Transaction </template>
 
       <UForm :state="state" :schema="schema" ref="form" @submit="save">
         <UFormGroup
@@ -34,7 +34,7 @@
           <UInput
             type="date"
             icon="i-heroicons-calendar-days-20-solid"
-            v-model="state.date"
+            v-model="state.created_at"
           />
         </UFormGroup>
 
@@ -109,19 +109,32 @@ const schema = z.intersection(
 const form = ref();
 
 const save = async () => {
-  form.value.validate();
+  if (form.value.errors.length) return;
+
+  // Store into the supabase
 };
 
-const state = ref({
+const initialState = {
   type: undefined,
   amount: 0,
   created_at: undefined,
   description: undefined,
   category: undefined,
+};
+
+const state = ref({
+  ...initialState,
 });
+const resetForm = () => {
+  Object.assign(state.value, initialState);
+  form.value.clear();
+};
 
 const isOpen = computed({
   get: () => props.modelValue,
-  set: (value) => emit("update:modelValue", value),
+  set: (value) => {
+    if (!value) resetForm();
+    emit("update:modelValue", value);
+  },
 });
 </script>
